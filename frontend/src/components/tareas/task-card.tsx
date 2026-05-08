@@ -7,14 +7,16 @@ import { PRIORITY_META } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Task, TaskStatus } from "@/types/task.types";
 
 interface TaskCardProps {
   task: Task;
-  onAdvance?: (taskId: string, currentStatus: any) => void;
+  onAdvance?: (taskId: string, currentStatus: TaskStatus) => void;
 }
 
 export function TaskCard({ task, onAdvance }: TaskCardProps) {
-  const priorityMeta = PRIORITY_META[task.priority || "low"];
+  const priorityKey = (task.priority?.toLowerCase() || "low") as keyof typeof PRIORITY_META;
+  const priorityMeta = PRIORITY_META[priorityKey];
   
   const {
     attributes,

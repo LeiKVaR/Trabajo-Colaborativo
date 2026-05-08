@@ -9,6 +9,7 @@ import { TASK_STATUS_META, PRIORITY_META } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import api from "@/lib/axios";
 import { CreateTaskModal } from "@/components/admin/create-task-modal";
+import { Task } from "@/types/task.types";
 
 export default function AdminTareasPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -95,8 +96,11 @@ export default function AdminTareasPage() {
               </thead>
               <tbody className="divide-y divide-border/40 stagger">
                 {filteredTasks.map((task) => {
-                  const statusMeta = TASK_STATUS_META[task.status];
-                  const priorityMeta = PRIORITY_META[task.priority || "low"];
+                  const statusKey = task.status as keyof typeof TASK_STATUS_META;
+                  const priorityKey = (task.priority?.toLowerCase() || "low") as keyof typeof PRIORITY_META;
+                  
+                  const statusMeta = TASK_STATUS_META[statusKey];
+                  const priorityMeta = PRIORITY_META[priorityKey];
 
                   return (
                     <tr key={task.id} className="hover:bg-muted/20 transition-colors">
