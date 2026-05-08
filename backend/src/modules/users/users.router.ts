@@ -12,5 +12,6 @@ router.use(authorize(['ADMIN']));
 router.get('/', usersController.list);
 router.get('/pending', usersController.listPending);
 router.patch('/:id/status', usersController.updateStatus);
+router.patch('/:id', usersController.update);
 
 export default router;

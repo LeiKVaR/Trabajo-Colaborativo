@@ -2,7 +2,6 @@ import prisma from '../../config/database';
 import { createNotification } from '../notifications/notifications.service';
 
 export const getAllUsers = async () => {
-  // ... (keeping existing code)
   return prisma.user.findMany({
     select: {
       id: true,
@@ -14,7 +13,6 @@ export const getAllUsers = async () => {
       position: true,
       department: true,
       createdAt: true,
-      password: false,
     },
   });
 };
@@ -28,7 +26,6 @@ export const getPendingUsers = async () => {
       lastName: true,
       email: true,
       createdAt: true,
-      password: false,
     },
   });
 };
@@ -59,4 +56,19 @@ export const updateUserStatus = async (userId: string, status: 'ACTIVE' | 'REJEC
   }
 
   return user;
+};
+
+export const updateUser = async (userId: string, data: any) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!existingUser) {
+    throw new Error('No se encontró el usuario');
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data,
+  });
 };
