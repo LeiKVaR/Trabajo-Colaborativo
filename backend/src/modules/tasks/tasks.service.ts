@@ -7,17 +7,17 @@ import { createNotification } from '../notifications/notifications.service';
  * Crea una tarea y la asigna a múltiples usuarios
  */
 export const createTask = async (data: CreateTaskInput) => {
-  const { assignedUserIds, ...taskData } = data;
+  const { assigneeIds, ...taskData } = data;
 
   // 1. Validar que todos los usuarios existan antes de intentar asignar
   const existingUsers = await prisma.user.findMany({
     where: {
-      id: { in: assignedUserIds },
+      id: { in: assigneeIds },
     },
     select: { id: true },
   });
 
-  if (existingUsers.length !== assignedUserIds.length) {
+  if (existingUsers.length !== assigneeIds.length) {
     throw new Error('Uno o más usuarios asignados no existen en el sistema');
   }
 
@@ -28,13 +28,14 @@ export const createTask = async (data: CreateTaskInput) => {
         title: taskData.title,
         description: taskData.description,
         requirements: taskData.requirements,
-        startDate: new Date(taskData.startDate),
+        priority: taskData.priority?.toLowerCase() || 'medium',
+        startDate: taskData.startDate ? new Date(taskData.startDate) : new Date(),
         endDate: new Date(taskData.endDate),
       },
     });
 
     // 3. Crear las asignaciones
-    const assignments = assignedUserIds.map((userId) => ({
+    const assignments = assigneeIds.map((userId) => ({
       taskId: newTask.id,
       userId,
     }));
@@ -47,7 +48,7 @@ export const createTask = async (data: CreateTaskInput) => {
   });
 
   // 4. Notificar a los usuarios asignados
-  for (const userId of assignedUserIds) {
+  for (const userId of assigneeIds) {
     await createNotification(
       userId,
       'Nueva Tarea Asignada',

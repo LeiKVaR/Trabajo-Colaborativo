@@ -120,6 +120,7 @@ model Task {
   description  String?
   requirements String?    // Requerimientos detallados
   status       TaskStatus @default(ASSIGNED)
+  priority     String     @default("medium") // high, medium, low
   startDate    DateTime
   endDate      DateTime
   createdAt    DateTime   @default(now())

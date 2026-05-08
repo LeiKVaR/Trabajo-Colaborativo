@@ -5,8 +5,8 @@ import { BulkScheduleInput } from './schedules.dto';
 export const getMySchedule = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id;
-    const schedule = await schedulesService.getUserSchedule(userId);
-    res.status(200).json({ status: 'success', data: { schedule } });
+    const schedules = await schedulesService.getUserSchedule(userId);
+    res.status(200).json({ status: 'success', data: { schedules } });
   } catch (error) {
     next(error);
   }
@@ -15,8 +15,8 @@ export const getMySchedule = async (req: Request, res: Response, next: NextFunct
 export const getUserSchedule = async (req: Request<{ userId: string }>, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
-    const schedule = await schedulesService.getUserSchedule(userId);
-    res.status(200).json({ status: 'success', data: { schedule } });
+    const schedules = await schedulesService.getUserSchedule(userId);
+    res.status(200).json({ status: 'success', data: { schedules } });
   } catch (error) {
     next(error);
   }
