@@ -1,0 +1,181 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+enum UserStatus {
+  PENDING    // Registro pendiente de aprobación
+  ACTIVE     // Aprobado y activo
+  REJECTED   // Rechazado por admin
+  INACTIVE   // Desactivado por admin
+}
+
+enum AttendanceStatus {
+  CHECKED_IN
+  ON_BREAK
+  CHECKED_OUT
+}
+
+enum TaskStatus {
+  ASSIGNED    // Tarea asignada
+  IN_PROGRESS // En avance
+  COMPLETED   // Finalizado
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model User {
+  id            String     @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String     @unique
+  password      String
+  phone         String?
+  avatarUrl     String?
+  role          Role       @default(EMPLOYEE)
+  status        UserStatus @default(PENDING)
+  position      String?    // Cargo / puesto
+  department    String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relaciones
+  attendance    Attendance[]
+  schedules     Schedule[]
+  taskAssignments TaskAssignment[]
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model Attendance {
+  id             String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id])
+  date           DateTime         @db.Date
+  checkIn        DateTime?
+  breakStart     DateTime?
+  breakEnd       DateTime?
+  checkOut       DateTime?
+  status         AttendanceStatus @default(CHECKED_IN)
+  workedMinutes  Int?             // Calculado al hacer checkout
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([userId, date])        // Un registro por día por usuario
+  @@map("attendance")
+}
+
+model Schedule {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  dayOfWeek   DayOfWeek
+  startTime   String    // "08:00"
+  endTime     String    // "17:00"
+  isWorkDay   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, dayOfWeek])
+  @@map("schedules")
+}
+
+model Task {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  requirements String?    // Requerimientos detallados
+  status       TaskStatus @default(ASSIGNED)
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relaciones
+  assignments  TaskAssignment[]
+  comments     TaskComment[]
+  attachments  TaskAttachment[]
+
+  @@map("tasks")
+}
+
+model TaskAssignment {
+  id       String @id @default(cuid())
+  taskId   String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  assignedAt DateTime @default(now())
+
+  @@unique([taskId, userId])
+  @@map("task_assignments")
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  taskId    String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("task_comments")
+}
+
+model TaskAttachment {
+  id        String   @id @default(cuid())
+  taskId    String
+  task     Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fileName  String
+  fileUrl   String
+  uploadedAt DateTime @default(now())
+
+  @@map("task_attachments")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String   // "task_assigned", "status_changed", "registration_approved", etc.
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
