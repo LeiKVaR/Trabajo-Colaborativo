@@ -30,7 +30,7 @@ export const updateStatus = async (req: Request<{ id: string }, {}, { status: 'A
   }
 };
 
-export const update = async (req: Request, res: Response, next: NextFunction) => {
+export const update = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const user = await updateUser(id, req.body);
