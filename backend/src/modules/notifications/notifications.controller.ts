@@ -30,3 +30,13 @@ export const markAllRead = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
+
+export const remove = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    await notificationsService.deleteNotification(id as string);
+    res.status(200).json({ status: 'success', message: 'Notificación eliminada' });
+  } catch (error) {
+    next(error);
+  }
+};

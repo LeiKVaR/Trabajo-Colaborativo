@@ -34,7 +34,7 @@ export const loginUser = async (data: LoginInput) => {
   });
 
   if (!user) {
-    throw { statusCode: 401, message: 'Invalid email or password' };
+    throw { statusCode: 401, message: 'Correo o contraseña incorrectos' };
   }
 
   if (user.status !== 'ACTIVE') {
@@ -44,7 +44,7 @@ export const loginUser = async (data: LoginInput) => {
   const isPasswordValid = await comparePassword(data.password, user.password);
 
   if (!isPasswordValid) {
-    throw { statusCode: 401, message: 'Invalid email or password' };
+    throw { statusCode: 401, message: 'Correo o contraseña incorrectos' };
   }
 
   const accessToken = generateAccessToken({ userId: user.id, role: user.role });

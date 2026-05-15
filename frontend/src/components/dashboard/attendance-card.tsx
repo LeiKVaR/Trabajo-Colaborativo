@@ -35,7 +35,7 @@ export function AttendanceCard() {
   const handleAction = async (action: "check-in" | "break-start" | "break-end" | "check-out") => {
     setLoading(true);
     try {
-      await api.post(`/attendance/${action}`);
+      await api.post(`/attendance/${action}`, {});
       toast.success("Acción registrada correctamente");
       fetchStatus();
     } catch (error: any) {
@@ -65,7 +65,7 @@ export function AttendanceCard() {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-6 space-y-6">
         <div className="flex flex-col items-center justify-center p-6 bg-muted/30 rounded-2xl border border-dashed border-border/60">
           <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Estado Actual</span>
@@ -92,8 +92,8 @@ export function AttendanceCard() {
 
         <div className="grid grid-cols-2 gap-3">
           {currentStatus === "NOT_STARTED" && (
-            <Button 
-              className="col-span-2 h-14 text-base gap-2 shadow-card hover-lift" 
+            <Button
+              className="col-span-2 h-14 text-base gap-2 shadow-card hover-lift"
               onClick={() => handleAction("check-in")}
               disabled={loading}
             >
@@ -104,17 +104,17 @@ export function AttendanceCard() {
 
           {currentStatus === "WORK_IN_PROGRESS" && (
             <>
-              <Button 
-                variant="outline" 
-                className="h-12 gap-2 border-warning/30 hover:bg-warning/10 hover:text-warning" 
+              <Button
+                variant="outline"
+                className="h-12 gap-2 border-warning/30 hover:bg-warning/10 hover:text-warning"
                 onClick={() => handleAction("break-start")}
                 disabled={loading}
               >
                 <Coffee className="h-4 w-4" /> Almuerzo
               </Button>
-              <Button 
-                variant="destructive" 
-                className="h-12 gap-2 shadow-sm" 
+              <Button
+                variant="destructive"
+                className="h-12 gap-2 shadow-sm"
                 onClick={() => handleAction("check-out")}
                 disabled={loading}
               >
@@ -124,8 +124,8 @@ export function AttendanceCard() {
           )}
 
           {currentStatus === "ON_BREAK" && (
-            <Button 
-              className="col-span-2 h-14 text-base gap-2 bg-success hover:bg-success/90 shadow-card" 
+            <Button
+              className="col-span-2 h-14 text-base gap-2 bg-success hover:bg-success/90 shadow-card"
               onClick={() => handleAction("break-end")}
               disabled={loading}
             >

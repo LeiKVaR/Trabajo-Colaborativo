@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 
 export default function EmployeeLayout({
   children,
@@ -40,6 +41,7 @@ export default function EmployeeLayout({
         <div className="flex-1 overflow-y-auto p-6 md:p-8 stagger">
           {children}
         </div>
+        <ChatWidget />
       </main>
     </div>
   );

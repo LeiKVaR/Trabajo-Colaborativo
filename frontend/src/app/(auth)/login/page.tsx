@@ -17,12 +17,15 @@ export default function LoginPage() {
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Conexión real con el backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
+    
     if (!email || !password) {
       toast.error("Por favor completa todos los campos");
       return;
@@ -39,7 +42,8 @@ export default function LoginPage() {
       // Redirección basada en el rol real del backend
       router.push(user.role === "ADMIN" ? "/admin" : "/dashboard");
     } catch (error: any) {
-      const message = error.response?.data?.message || "Error al iniciar sesión";
+      const message = error.response?.data?.message || "Email o contraseña incorrectos";
+      setErrorMsg(message);
       toast.error(message);
     } finally {
       setLoading(false);
@@ -67,7 +71,14 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Card className="shadow-card border-border/60">
+        <Card className="shadow-card border-border/60 overflow-hidden">
+          {errorMsg && (
+            <div className="bg-destructive/10 border-b border-destructive/20 p-3 text-center">
+              <p className="text-xs font-medium text-destructive">
+                {errorMsg}
+              </p>
+            </div>
+          )}
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}

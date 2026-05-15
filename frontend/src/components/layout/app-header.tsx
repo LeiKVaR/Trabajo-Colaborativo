@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth-store";
 import { useLogout } from "@/hooks/use-logout";
+import { useNotifications } from "@/hooks/use-notifications";
+import { NotificationPanel } from "@/components/notifications/notification-panel";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +20,7 @@ import {
 export function AppHeader() {
   const { user } = useAuthStore();
   const { handleLogout } = useLogout();
+  const { unreadCount } = useNotifications();
 
   return (
     <header className="h-16 border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30 px-6 flex items-center justify-between">
@@ -37,10 +41,21 @@ export function AppHeader() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 hover:text-primary transition-colors">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-2 right-2 h-2 w-2 bg-danger rounded-full border-2 border-background" />
-        </Button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="relative hover:bg-primary/10 hover:text-primary transition-colors">
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-2 right-2 h-4 w-4 bg-danger text-[10px] text-white flex items-center justify-center rounded-full border-2 border-background font-bold animate-in fade-in zoom-in">
+                  {unreadCount}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="p-0 border-none bg-transparent">
+            <NotificationPanel />
+          </PopoverContent>
+        </Popover>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

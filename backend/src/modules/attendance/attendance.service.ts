@@ -41,7 +41,7 @@ export const checkIn = async (userId: string, notes?: string) => {
   }
 
   if (!schedule.isWorkDay) {
-    throw new Error('Hoy no es un día laborable según tu horario asignado.');
+    throw new Error('Hoy es tu día libre según tu horario asignado. No es necesario marcar asistencia.');
   }
 
   // 2. Verificar si ya existe un registro para hoy

@@ -48,7 +48,7 @@ export default function AsistenciaPage() {
   const handleAction = async (action: string, nextStatus: ShiftStatus, message: string) => {
     try {
       setLoading(true);
-      await api.post(`/attendance/${action}`);
+      await api.post(`/attendance/${action}`, {});
       setStatus(nextStatus);
       toast.success(message);
     } catch (error: any) {
@@ -85,7 +85,7 @@ export default function AsistenciaPage() {
             <CardDescription>Marca tu actividad actual. Se registrará tu ubicación GPS.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            
+
             {status === "IDLE" && (
               <Button size="lg" className="h-24 text-lg gap-3 hover-lift shadow-card col-span-2" disabled={loading} onClick={() => handleAction("check-in", "WORKING", "Entrada registrada")}>
                 <Play className="h-6 w-6 fill-current" /> Iniciar Turno
@@ -113,7 +113,6 @@ export default function AsistenciaPage() {
               <div className="col-span-2 p-6 bg-success/10 border border-success/20 rounded-xl text-center">
                 <p className="text-success font-semibold">¡Jornada completada!</p>
                 <p className="text-sm text-success/80">Has registrado tu salida exitosamente.</p>
-                <Button variant="link" className="mt-2 text-success" onClick={() => setStatus("IDLE")}>Reiniciar (Demo)</Button>
               </div>
             )}
           </CardContent>

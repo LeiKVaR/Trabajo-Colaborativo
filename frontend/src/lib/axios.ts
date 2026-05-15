@@ -21,9 +21,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // Si es 401 y NO es la ruta de login, entonces sí deslogueamos
+    if (error.response?.status === 401 && !error.config?.url?.includes("/auth/login")) {
       useAuthStore.getState().logout();
-      window.location.href = "/login";
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
